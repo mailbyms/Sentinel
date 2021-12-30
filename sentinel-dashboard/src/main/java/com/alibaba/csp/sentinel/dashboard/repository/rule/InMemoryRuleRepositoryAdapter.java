@@ -22,7 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.RuleEntity;
 import com.alibaba.csp.sentinel.dashboard.discovery.MachineInfo;
+import com.alibaba.csp.sentinel.dashboard.util.IdGenerator;
 import com.alibaba.csp.sentinel.util.AssertUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author leyou
@@ -36,6 +38,9 @@ public abstract class InMemoryRuleRepositoryAdapter<T extends RuleEntity> implem
     private Map<Long, T> allRules = new ConcurrentHashMap<>(16);
 
     private Map<String, Map<Long, T>> appRules = new ConcurrentHashMap<>(16);
+
+    @Autowired
+    private IdGenerator<Long> idGenerator;
 
     private static final int MAX_RULES_SIZE = 10000;
 
@@ -125,5 +130,7 @@ public abstract class InMemoryRuleRepositoryAdapter<T extends RuleEntity> implem
      *
      * @return next unused id
      */
-    abstract protected long nextId();
+    protected long nextId() {
+        return idGenerator.nextId();
+    }
 }

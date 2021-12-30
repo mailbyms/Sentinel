@@ -29,8 +29,5 @@ public class InMemDegradeRuleStore extends InMemoryRuleRepositoryAdapter<Degrade
 
     private static AtomicLong ids = new AtomicLong(0);
 
-    @Override
-    protected long nextId() {
-        return ids.incrementAndGet();
-    }
+
 }
