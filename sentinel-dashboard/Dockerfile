@@ -11,6 +11,8 @@ RUN cd /opt \
     && sed -i 's/nacos.namespace=.*/nacos.namespace=${NACOS_NAMESPACE:sentinel_namespace}/g' ${PROPERTY_FILE} \
     && sed -i 's/id.dataCenterId=.*/id.dataCenterId=${ID_DATA_CENTER_ID:0}/g' ${PROPERTY_FILE} \
     && sed -i 's/id.workerId=.*/id.workerId=${ID_WORKER_ID:0}/g' ${PROPERTY_FILE} \
+    && sed -i 's/auth.username=.*/auth.username=${DASHBOARD_USERNAME:sentinel}/g' ${PROPERTY_FILE} \
+    && sed -i 's/auth.password=.*/auth.password=${DASHBOARD_PASSWORD:sentinel}/g' ${PROPERTY_FILE} \
     && jar uf sentinel-dashboard.jar ${PROPERTY_FILE}
 
 ### phase 2

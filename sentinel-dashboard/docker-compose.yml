@@ -9,6 +9,8 @@ services:
       TZ: Asia/Shanghai
       NACOS_ADDRESS: 192.168.1.70:8848
       NACOS_NAMESPACE: sentinel_namespace
+      DASHBOARD_USERNAME: sentinel
+      DASHBOARD_PASSWORD: sentinel
       ID_DATA_CENTER_ID: 0
       ID_WORKER_ID: 0
 
