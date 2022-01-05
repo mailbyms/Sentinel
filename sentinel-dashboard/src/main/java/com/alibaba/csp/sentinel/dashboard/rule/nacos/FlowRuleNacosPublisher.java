@@ -20,6 +20,9 @@ import com.alibaba.csp.sentinel.dashboard.rule.DynamicRulePublisher;
 import com.alibaba.csp.sentinel.datasource.Converter;
 import com.alibaba.csp.sentinel.util.AssertUtil;
 import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,19 +34,33 @@ import java.util.List;
  */
 @Component("flowRuleNacosPublisher")
 public class FlowRuleNacosPublisher implements DynamicRulePublisher<List<FlowRuleEntity>> {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ConfigService configService;
     @Autowired
     private Converter<List<FlowRuleEntity>, String> converter;
 
+    private static void wait2Sync() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+    }
+
     @Override
-    public void publish(String app, List<FlowRuleEntity> rules) throws Exception {
+    public void publish(String app, List<FlowRuleEntity> rules) throws NacosException {
+        logger.info("app:{} about to publish rules:{}", app, converter.convert(rules));
+
         AssertUtil.notEmpty(app, "app name cannot be empty");
         if (rules == null) {
+            logger.warn("publish null rules, return");
             return;
         }
-        configService.publishConfig(app + NacosConfigUtil.FLOW_DATA_ID_POSTFIX,
-            NacosConfigUtil.GROUP_ID, converter.convert(rules));
+        boolean result = configService.publishConfig(app + NacosConfigUtil.FLOW_DATA_ID_POSTFIX,
+                NacosConfigUtil.GROUP_ID, converter.convert(rules));
+        logger.info("publish result: {}", result);
+        wait2Sync();
     }
 }

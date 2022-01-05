@@ -17,8 +17,8 @@ public class SnowflakeIdGenerator implements IdGenerator<Long> {
     private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final long startEpoch = LocalDateTime.parse("2019-01-01 08:00:00", DF).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 
-    private final long workerIdBits = 5L;
-    private final long datacenterIdBits = 5L;
+    private final long workerIdBits = 2L;   // 从 5 bit 减到 2 bit。因为前端显示精度缺失
+    private final long datacenterIdBits = 2L;  // 从 5 bit 减到 2 bit。因为前端显示精度缺失
     private final long maxWorkerId = ~(-1L << workerIdBits);
     private final long maxDatacenterId = ~(-1L << datacenterIdBits);
     private final long sequenceBits = 12L;
@@ -33,6 +33,8 @@ public class SnowflakeIdGenerator implements IdGenerator<Long> {
     private long sequence = 0L;
 
     public SnowflakeIdGenerator(long datacenterId, long workerId) {
+        logger.info("snowflake datacenterId:{}， workerId:{}", datacenterId, workerId);
+
         if (datacenterId > maxDatacenterId || datacenterId < 0) {
             throw new IllegalArgumentException(String.format("datacenter Id can't be greater than %d or less than 0", maxDatacenterId));
         }

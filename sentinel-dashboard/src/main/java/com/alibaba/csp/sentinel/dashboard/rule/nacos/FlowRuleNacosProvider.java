@@ -20,6 +20,8 @@ import com.alibaba.csp.sentinel.dashboard.rule.DynamicRuleProvider;
 import com.alibaba.csp.sentinel.datasource.Converter;
 import com.alibaba.csp.sentinel.util.StringUtil;
 import com.alibaba.nacos.api.config.ConfigService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +34,7 @@ import java.util.List;
  */
 @Component("flowRuleNacosProvider")
 public class FlowRuleNacosProvider implements DynamicRuleProvider<List<FlowRuleEntity>> {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ConfigService configService;
@@ -43,8 +46,11 @@ public class FlowRuleNacosProvider implements DynamicRuleProvider<List<FlowRuleE
         String rules = configService.getConfig(appName + NacosConfigUtil.FLOW_DATA_ID_POSTFIX,
             NacosConfigUtil.GROUP_ID, 3000);
         if (StringUtil.isEmpty(rules)) {
+            logger.warn("Empty rules, server status:{}", configService.getServerStatus());
             return new ArrayList<>();
         }
+
+        logger.info("rules: {}", rules);
         return converter.convert(rules);
     }
 }
